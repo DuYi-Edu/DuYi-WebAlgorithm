@@ -25,51 +25,89 @@ pointSet.push(c);
 pointSet.push(d);
 pointSet.push(e);
 
-
-function getIndex(str) {
-    for (var i = 0 ; i < pointSet.length ; i ++) {
-        if (str == pointSet[i].value) return i;
-    }
-    return -1;
-}
-
-//需要传入点的集合，边的集合，当前已经连接进入的集合
-// 此方法，根据当前已经有的节点，来进行判断，获取到距离最短的点
-function getMinDisNode(pointSet, distance, nowPointSet) {
-    var fromNode = null;//线段的起点
-    var minDisNode = null;//线段的终点
-    var minDis = max;
-    //根据当前已有的这些点为起点，依次判断连接其他的点的距离是多少
-    for (var i = 0 ; i < nowPointSet.length ; i ++) {
-        var nowPointIndex = getIndex(nowPointSet[i].value);//获取当前节点的序号
-        for (var j = 0 ; j < distance[nowPointIndex].length ; j ++) {
-            var thisNode = pointSet[j];//thisNode表示distance中的点，但是这个点不是对象。
-            if (nowPointSet.indexOf(thisNode) < 0//首先这个点不能是已经接入的点
-            && distance[nowPointIndex][j] < minDis) {//其次点之间的距离得是目前的最短距离
-                fromNode = nowPointSet[i];
-                minDisNode = thisNode;
-                minDis  = distance[nowPointIndex][j];
-            }
+function canLink(resultList, tempBegin, tempEnd) {
+    var beginIn = null;
+    var endIn = null;
+    for (var i = 0 ; i < resultList.length ; i ++) {
+        if (resultList[i].indexOf(tempBegin) > -1) {
+            beginIn = resultList[i];
+        }
+        if (resultList[i].indexOf(tempEnd) > -1) {
+            endIn = resultList[i];
         }
     }
-    fromNode.neighbor.push(minDisNode);
-    minDisNode.neighbor.push(fromNode);
-    return minDisNode;
+    //两个点都是新的点（都不在任何部落里）——可以连接，产生新的部落
+    // begin在A部落，end没有部落 —— A部落扩张一个村庄
+    // end在A部落，begin没有部落 ——A部落扩张一个村庄
+    // begin在A部落，end在B部落 ——将AB两个部落合并
+    // begin和end在同一个部落，——不可以连接
+    if (beginIn != null && endIn != null && beginIn == endIn) {
+        return false;
+    }
+    return true;
 }
 
-function prim(pointSet, distance, start) {
-    var nowPointSet = [];
-    nowPointSet.push(start);
-    //获取最小代价的边
-    while (true) {
-        var minDisNode = getMinDisNode(pointSet, distance, nowPointSet);
-        nowPointSet.push(minDisNode);
-        if (nowPointSet.length == pointSet.length) {
+function link(resultList, tempBegin, tempEnd) {
+    var beginIn = null;
+    var endIn = null;
+    for (var i = 0 ; i < resultList.length ; i ++) {
+        if (resultList[i].indexOf(tempBegin) > -1) {
+            beginIn = resultList[i];
+        }
+        if (resultList[i].indexOf(tempEnd) > -1) {
+            endIn = resultList[i];
+        }
+    }
+    if (beginIn == null && endIn == null) {// 两个点都是新的点（都不在任何部落里）——可以连接，产生新的部落
+        var newArr = [];
+        newArr.push(tempBegin);
+        newArr.push(tempEnd);
+        resultList.push(newArr);
+    } else if (beginIn != null && endIn == null) {// begin在A部落，end没有部落 —— A部落扩张一个村庄
+        beginIn.push(tempEnd);
+    } else if (beginIn == null && endIn != null) {// end在A部落，begin没有部落 ——A部落扩张一个村庄
+        endIn.push(tempBegin);
+    } else if (beginIn != null && endIn != null && beginIn != endIn) {// begin在A部落，end在B部落 ——将AB两个部落合并
+        var allIn = beginIn.concat(endIn);
+        var needRemove = resultList.indexOf(endIn);
+        resultList.splice(needRemove, 1);
+        needRemove = resultList.indexOf(beginIn);
+        resultList.splice(needRemove, 1);
+        resultList.push(allIn);
+    }
+    tempBegin.neighbor.push(tempEnd);
+    tempEnd.neighbor.push(tempBegin);
+}
+
+function kruskal(pointSet, distance) {
+
+    var resultList = [];//这里是二维数组，此数组代表的是有多少个"部落"
+
+    while(true) {
+        var minDis = max;
+        var begin = null;
+        var end = null;
+        for (var i = 0 ; i < distance.length ; i ++) {
+            for (var j = 0 ; j < distance[i].length ; j ++) {
+                var tempBegin = pointSet[i];
+                var tempEnd = pointSet[j];
+                if (i != j//去掉自己到自己的距离，因为都为0
+                    && distance[i][j] < minDis
+                    && canLink(resultList, tempBegin, tempEnd)
+                ) {
+                    minDis = distance[i][j];
+                    begin = tempBegin;
+                    end = tempEnd;
+                }
+            }
+        }
+        link(resultList, begin, end);
+        if (resultList.length == 1 && resultList[0].length == pointSet.length) {//只存在一个部落
             break;
         }
     }
+
 }
 
-prim(pointSet, distance, pointSet[2]);
-
+kruskal(pointSet, distance);
 console.log(pointSet);
