@@ -16,12 +16,14 @@ a.childs.push(b);
 b.childs.push(d);
 b.childs.push(e);
 
-function deepSearch(root) {
-    if (root == null) return;
-    console.log(root.value);
+function deepSearch(root, target) {
+    if (root == null) return false;
+    if (root.value == target) return true;
+    var result = false;
     for (var i = 0 ; i < root.childs.length ; i ++) {
-        deepSearch(root.childs[i]);
+        result |= deepSearch(root.childs[i], target);
     }
+    return result ? true : false;
 }
 
-deepSearch(a);
+console.log(deepSearch(a, "n"));
