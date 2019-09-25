@@ -22,16 +22,16 @@ d.neighbor.push(c);
 d.neighbor.push(e);
 e.neighbor.push(d);
 
-function deepSearch(node, target, path) {
-    if (node == null) return false;
-    if (path.indexOf(node) > -1) return false;
-    if (node.value == target) return true;
-    path.push(node);
-    var result = false;
-    for (var i = 0 ; i < node.neighbor.length ; i ++) {
-        result |= deepSearch(node.neighbor[i], target, path);
+function bfs(nodes, target, path) {
+    if (nodes == null || nodes.length == 0) return false;
+    var nextNodes = [];
+    for (var i = 0 ; i < nodes.length ; i ++) {
+        if (path.indexOf(nodes[i]) > -1) continue;
+        path.push(nodes[i]);
+        if (nodes[i].value == target) return true;
+        else nextNodes = nextNodes.concat(nodes[i].neighbor);
     }
-    return result ? true : false;
+    return bfs(nextNodes, target, path);
 }
 
-console.log(deepSearch(b, "n", []));
+console.log(bfs([c], "n", []));
