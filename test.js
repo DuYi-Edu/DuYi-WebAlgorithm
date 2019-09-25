@@ -73,14 +73,20 @@ function change(root) {//返回平衡之后的根节点
         if (changeTreeDeep > noChangeTreeDeep) {
             root.left = leftRotate(root.left);
         }
-        return rightRotate(root);
+        var newRoot = rightRotate(root);
+        newRoot.right = change(newRoot.right);
+        newRoot = change(newRoot);
+        return newRoot;
     } else {//不平衡，右边深，需要左旋
         var changeTreeDeep = getDeep(root.right.left);
         var noChangeTreeDeep = getDeep(root.right.right);
         if (changeTreeDeep > noChangeTreeDeep) {
             root.right = rightRotate(root.right);
         }
-        return leftRotate(root);
+        var newRoot = leftRotate(root);
+        newRoot.left = change(newRoot.left);
+        newRoot = change(newRoot);
+        return newRoot;
     }
     return root;
 }
@@ -120,13 +126,13 @@ for (var i = 0 ; i < 10000 ; i ++) {
 }
 
 var root = buildSearchTree(arr);
-// console.log(searchByTree(root, 1000));
-// console.log(num2);
+console.log(searchByTree(root, 1000));
+console.log(num2);
 
 var newRoot = change(root);
-// num2 = 0;
-// console.log(searchByTree(newRoot, 1000));
-// console.log(num2);
+num2 = 0;
+console.log(searchByTree(newRoot, 1000));
+console.log(num2);
 console.log(isBalance(newRoot));
 
 
