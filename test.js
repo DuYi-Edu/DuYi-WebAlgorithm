@@ -16,12 +16,18 @@ a.childs.push(b);
 b.childs.push(d);
 b.childs.push(e);
 
-function deepSearch(root) {
-    if (root == null) return;
-    console.log(root.value);
-    for (var i = 0 ; i < root.childs.length ; i ++) {
-        deepSearch(root.childs[i]);
+
+function bfs(roots, target) {
+    if (roots == null || roots.length == 0) return false;
+    var childs = [];
+    for (var i = 0 ; i < roots.length ; i ++) {
+        if (roots[i].value == target) {
+            return true;
+        } else {
+            childs = childs.concat(roots[i].childs);
+        }
     }
+    return bfs(childs, target);
 }
 
-deepSearch(a);
+console.log(bfs([a], "n"));
