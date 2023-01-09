@@ -26,8 +26,10 @@ function f1(rootList, target) {
         if (rootList[i] != null && rootList[i].value == target) {
             return true;
         } else {
-            childList.push(rootList[i].left);
-            childList.push(rootList[i].right);
+            if (rootList[i] !== null) {
+                childList.push(rootList[i].left);
+                childList.push(rootList[i].right);
+            } 
         }
     }
     return f1(childList, target);
