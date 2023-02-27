@@ -64,7 +64,7 @@ function change(root) {//返回平衡之后的根节点
     var leftDeep = getDeep(root.left);
     var rightDeep = getDeep(root.right);
     if (Math.abs(leftDeep - rightDeep) < 2) {
-        return true;
+        return root;
     } else if (leftDeep > rightDeep) {//不平衡，左边深，需要右旋
         return rightRotate(root);
     } else {//不平衡，右边深，需要左旋
