@@ -15,7 +15,7 @@ function exchange(arr, a, b) {
 function sort(arr) {
     for (var i = 0 ; i < arr.length ; i ++) {
         var maxIndex = 0;
-        for (var j = 0 ; j < arr.length - 1 - i ; j ++) {
+        for (var j = 0 ; j < arr.length - i ; j ++) {
             if (compare(arr[maxIndex], arr[j])) {
                 maxIndex = j;
             }
